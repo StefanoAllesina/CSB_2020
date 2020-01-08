@@ -39,7 +39,7 @@ git clone https://github.com/CSB-book/CSB.git
 - Clone the repository for the exercises and summaries
 
 ```
-git clone https://github.com/StefanoAllesina/CSB_2019.git
+git clone https://github.com/StefanoAllesina/CSB_2020.git
 ```
 
 ### Week 1: UNIX Shell
