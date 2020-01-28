@@ -1,75 +1,115 @@
 ## Possible solution to warmup problem Week 4
 
 ```python
-import re
+# coding: utf-8
 
-# 1. For each author, use regular expressions to extact:
-# Name
-# Number of papers
-# The first in the list of disciplines
+import re # regular expressions
+# for plotting
+import matplotlib.pyplot as plt
+get_ipython().run_line_magic('matplotlib', 'inline')
 
-# read all of the html in one go
+# for each author extract
+# name
+# number of documents
+# h-index
+
+# because working with the large file is difficult
+# create a small file that is easier to read
+# for example
+# grep -B4 -A4 Allesina scopus.html > small.html
+
+# Step 1: read the whole file
 with open('scopus.html', 'r') as content_file:
     content = content_file.read()
 
-# compile the regular expression for faster execution
-# we are simply capturing with a group whatever follows "View this author&#39;s profile">
-find_author = re.compile(r'title="View this author&#39;s profile"> (.*)<')
-author_list = re.findall(find_author, content)
+# Step 2: Extracting names
+# Note that the names reported as:
+"""title="View this author&#39;s profile"> Allesina, Stefano</a>"""
 
-# Similarly, capture the number of papers
-find_num_papers = re.compile(r'"View documents for this author" class="txtSmaller">\n(.*)')
-paper_list = re.findall(find_num_papers, content)
+names = re.findall(r'title="View this author&#39;s profile"> (.*)</a>', content)
 
-# And finally, the discipline
-find_disciplines = re.compile(r'<td class="dataCol4">\n(.*)')
-discipline_list = re.findall(find_disciplines, content)
+names[:10]
 
-# compile a better-organized list of authors
-all_authors = []
-for i in range(len(author_list)):
-   all_authors.append([author_list[i].strip(),
-                       int(paper_list[i]),
-                       discipline_list[i].strip()])
+# make sure we have 2000 names
+len(names)
 
-print("Exercise 1")
+# Step 3: Extracting number of documents
+# Similarly, we have strings like
+"""title="View documents for this author">
+88
+</a>"""
+# reporting the number of documents
+# we use the same strategy
+# note we need to add .*? in front of (\d+) 
+# as some numbers are misformatted
 
-for i in range(10):
-   print(all_authors[i])
+documents = re.findall(r'title="View documents for this author">\n?.*?(\d+)\s?\n?</a>', content)
 
-print("")
+documents[:10]
+# make sure there are 2000 values
+len(documents)
 
-# 2. Which discipline is most represented? 
-# Take the list of authors you’ve just produced, 
-# and tally the number of authors by discipline.
+# Step 4: extracting h-index
+# the pattern is 
+"""
+<td class="dataCol4 alignRight">
+33
+"""
 
-# organize in a dictionary
-disciplines = {}
-for au in all_authors:
-   my_disc = au[2]
-   if my_disc not in disciplines.keys():
-      disciplines[my_disc] = 0
-   disciplines[my_disc] = disciplines[my_disc] + 1 
+hindex = re.findall(r'<td class="dataCol4 alignRight">\n(\d+)\n', content)
 
-print("Exercise 2")
+hindex[:10]
+len(hindex)
 
-for key,value in disciplines.items():
-    print(key, value)
+# now make documents and hindex integers for computing
+documents = [int(x) for x in documents] # list comprehension
+hindex = [int(x) for x in hindex] 
 
-print("")
+# some stats
+print("documents: max", max(documents), 
+      "min", min(documents), 
+      "mean", sum(documents) / len(documents))
+print("hindex: max", max(hindex), 
+      "min", min(hindex), 
+      "mean", sum(hindex) / len(hindex))
 
-# 3. What is the average number of papers for these authors?
+def scatter_plot(x, y, label = 'my plot'):
+    plt.plot(x, y, 'o', c = 'g')
+    plt.title(label)
+    plt.show()
 
-mean_papers = 0
-# add all papers together and divide by 2000
-for au in all_authors:
-    mean_papers = mean_papers + au[1]
-mean_papers = mean_papers / len(all_authors)
+scatter_plot(documents, hindex, "number of documents")
 
-print("Exercise 3")
+# try with logarithm
+import math
+logdoc = [math.log(x) for x in documents]
 
-print("Average:", round(mean_papers, 2))
+scatter_plot(logdoc, hindex, "log number of documents")
 
-print("")
+# try with sqrt
+sqrtdoc = [math.sqrt(x) for x in documents]
+
+scatter_plot(sqrtdoc, hindex, "sqrt number of documents")
+
+# compute correlation between
+# number of docs and h-index
+# log(number of docs) and h-index
+# sqrt(number of docs) and h-index
+
+def compute_pearson_correlation(x, y):
+    meanx = sum(x) / len(x)
+    sdx = math.sqrt(sum([(a - meanx) ** 2 for a in x]) / len(x))
+    meany = sum(y) / len(y)
+    sdy = math.sqrt(sum([(a - meany) ** 2 for a in y]) / len(y))
+    # now compute mean(x y)
+    xy = x
+    for i in range(len(x)):
+        xy[i] = xy[i] * y[i]
+    # correlation:
+    # (E[x y] - E[x] E[y]) / (sd[x] sd[y])
+    meanxy = sum(xy) / len(xy)
+    return (meanxy - meanx * meany)/ (sdx * sdy)
+
+compute_pearson_correlation(sqrtdoc, hindex)
 ```
 

@@ -170,11 +170,14 @@ We are going to exploit a small ~~bug~~ feature of Scopus.
 1. For each author, use regular expressions to extact:
    - Name
    - Number of papers
-   - The first in the list of disciplines
-   
-2. Which discipline is most represented? Take the list of authors you've just produced, and tally the number of authors by discipline.
+   - H-index 
 
-3. What is the average number of papers for these authors?
+2. What is the average number of papers for these authors?
+
+3. Compute Pearson's correlation coefficient between:
+   - Number of documents and H-index
+   - log(number of documents) and H-index
+   - sqrt(number of documents) and H-index
 
 Here's the [solution](solutions/week4)
 
