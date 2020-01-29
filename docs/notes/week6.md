@@ -6,25 +6,17 @@ For this exercise, you can choose a *Subject Area* that interests you from the [
 
 Good choices (i.e., disciplines with few pages) are:
 
-* `biophysics` (178)
-* `biochemistry` (118)
-* `animal-behavior-and-cognition` (69)
-* `cancer-biology` (134)
-* `clinical-trials` (8)
-* `developmental-biology` (128)
-* `ecology` (179)
-* `epidemiology` (115)
-* `immunology` (90)
-* `molecular-biology` (125)
-* `paleontology` (7)
-* `pathology` (9)
-* `pharmacology-and-toxicology` (32)
-* `physiology` (44)
-* `plant-biology` (112)
+* `biophysics` (~305)
+* `biochemistry` (~215)
+* `animal-behavior-and-cognition` (~115)
+* `cancer-biology` (~245)
+* `clinical-trials` (10)
+* `developmental-biology` (~215)
+* `ecology` (~310)
+* `molecular-biology` (~230)
+* `paleontology` (11)
+* `pathology` (~40)
 * `scientific-communication-and-education` (29)
-* `synthetic-biology` (43)
-* `systems-biology` (132)
-* `zoology` (20)
 
 ### Part 1: Download metadata from bioRXiv
 
