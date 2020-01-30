@@ -4,7 +4,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'notebook')
+%matplotlib notebook
 
 data = pd.read_csv('bioRXiv.csv')
 
@@ -12,31 +12,42 @@ data = pd.read_csv('bioRXiv.csv')
 
 # transform to datetime
 data.date = pd.to_datetime(data.date)
+# extract year
+data['year'] = pd.DatetimeIndex(data['date']).year
+# extract month
+data['month'] = pd.DatetimeIndex(data['date']).month
+# extract day of the week
+data['weekday'] = pd.DatetimeIndex(data['date']).dayofweek
 
-# now you can access week number
-# data.date.dt.month
-# and year
-# data.date.dt.year
-# create a new variable (numeric):
-# 2018 + 3/12 is the 3rd month of 2018
-month_year = pd.to_numeric(data.date.dt.year)  
-month_year = month_year + pd.to_numeric(data.date.dt.month) / 12
-
-# now count submissions per month
-submission_month = month_year.groupby(month_year).size()
-
-# and plot!
-submission_month.plot()
+# plot number of submissions per year
+plt.figure()
+# this creates a Series
+s_per_year = data.groupby('year').size()
+s_per_year.plot()
+# now by month and year
+plt.figure()
+s_per_mo_year = data.groupby(['year', 'month']).size()
+s_per_mo_year.plot()
+# if this was exponential growth, in log it should be a line
+s_per_year.plot(loglog = True)
+# which day is the one with most submissions?
+s_per_weekday = data.groupby('weekday').size()
+s_per_weekday.plot.bar()
+# which month is the one with most submissions?
+s_per_month = data.groupby('month').size()
+s_per_month.plot.bar()
 
 # 2. Draw the distribution of the number of authors in the *Subject Area*. If people choose different areas, we can see whether different disciplines have different cultures.
 
-bins = np.linspace(1, max(data['num_authors']) + 1, max(data['num_authors']) + 1)
+plt.figure()
 data['num_authors'].hist(bins = bins)
+# very skewed distribution; try to plot in log
+plt.hist(data['num_authors'], log = 'xy')
 
-data['num_authors'].mean()
-
-data['num_authors'].median()
-
-data['num_authors'].mode()
+# see whether mean and median have changed
+trend_num_auth = data.groupby('year')['num_authors'].agg(mean_na = 'mean',
+                                                         median_na= 'median',
+                                                         sd_na = 'std')
+trend_num_auth.plot()
 
 ```
