@@ -34,7 +34,6 @@ def download_category(category = "ecology"):
             f.write(page.content)
     return None
 
-
 # If run from command line, launch category 
 # stored in first argument
 if __name__ == "__main__":
